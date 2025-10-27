@@ -17,6 +17,7 @@ public class PokemonTO {
     private Double peso;
     @NotBlank
     private String categoria;
+    @NotNull
     @PastOrPresent
     private LocalDate dataDeCaptura;
     // construtores

@@ -20,14 +20,14 @@ public class PokemonBO {
         return pokemonDAO.findByCodigo(codigo);
     }
 
-    public PokemonTO save (PokemonTO remedio) {
+    public PokemonTO save (PokemonTO pokemon) {
         pokemonDAO = new PokemonDAO();
         // aqui se implementa a regra de negócios
         // verificando se o remédio já está vencido
         /*if (remedio.getDataDeValidade().isBefore(LocalDate.now())) {
             return null;
         }*/
-        return pokemonDAO.save(remedio);
+        return pokemonDAO.save(pokemon);
     }
 
     public boolean delete(Long codigo) {
@@ -36,9 +36,9 @@ public class PokemonBO {
         return pokemonDAO.delete(codigo);
     }
 
-    public PokemonTO update(PokemonTO remedio) {
+    public PokemonTO update(PokemonTO pokemon) {
         pokemonDAO = new PokemonDAO();
         // aqui se implementa a regra de negócios
-        return pokemonDAO.update(remedio);
+        return pokemonDAO.update(pokemon);
     }
 }

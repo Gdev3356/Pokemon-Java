@@ -2,35 +2,39 @@ package br.com.fiap.dao;
 
 import br.com.fiap.to.PokemonTO;
 
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 
 public class PokemonDAO {
     public ArrayList<PokemonTO> findAll() {
         ArrayList<PokemonTO> pokemons = new ArrayList<PokemonTO>();
         String sql = "select * from ddd_pokemon order by codigo";
-        try(PreparedStatement ps = ConnectionFactory.getConnection().prepareStatement(sql))
-        {
+        PreparedStatement ps = null;
+
+        Connection connection = ConnectionFactory.getConnection();
+
+        if (connection == null) {
+            System.out.println("Erro Crítico: Conexão com o banco de dados é nula. Verifique ConnectionFactory.");
+            return pokemons;
+        }
+
+        try {
+            ps = connection.prepareStatement(sql);
+
             ResultSet rs = ps.executeQuery();
-            if (rs != null) {
-                while (rs.next()) {
-                    PokemonTO pokemon = new PokemonTO();
-                    pokemon.setCodigo(rs.getLong("codigo"));
-                    pokemon.setNome(rs.getString("nome"));
-                    pokemon.setAltura(rs.getDouble("altura"));
-                    pokemon.setPeso(rs.getDouble("peso"));
-                    pokemon.setDataDeCaptura(rs.getDate("data_de_captura").toLocalDate());
-                    pokemon.setCategoria(rs.getString("categoria"));
-                    pokemons.add(pokemon);
-                }
-            } else {
-                return null;
+
+            while (rs.next()) {
+                PokemonTO pokemon = new PokemonTO();
+                pokemon.setCodigo(rs.getLong("codigo"));
+                pokemon.setNome(rs.getString("nome"));
+                pokemon.setAltura(rs.getDouble("altura"));
+                pokemon.setPeso(rs.getDouble("peso"));
+                pokemon.setDataDeCaptura(rs.getDate("data_de_captura").toLocalDate());
+                pokemon.setCategoria(rs.getString("categoria"));
+                pokemons.add(pokemon);
             }
         } catch (SQLException e) {
-            System.out.println("Erro na consulta: " + e.getMessage());
+            System.out.println("Erro na consulta SQL: " + e.getMessage());
         } finally {
             ConnectionFactory.closeConnection();
         }
@@ -39,6 +43,11 @@ public class PokemonDAO {
 
     public PokemonTO findByCodigo(Long codigo) {
         PokemonTO pokemon = new PokemonTO();
+        Connection connection = ConnectionFactory.getConnection();
+        if (connection == null) {
+            System.out.println("Erro: Conexão nula em findByCodigo.");
+            return null;
+        }
         String sql = "select * from ddd_pokemon where codigo = ?";
         try(PreparedStatement ps = ConnectionFactory.getConnection().prepareStatement(sql))
         {
@@ -63,25 +72,42 @@ public class PokemonDAO {
     }
 
     public PokemonTO save(PokemonTO pokemon) {
+        Connection connection = ConnectionFactory.getConnection();
+        if (connection == null) {
+            System.out.println("Erro: Conexão nula em save.");
+            return null;
+        }
+
         String sql = "insert into ddd_pokemon (nome, altura, peso, data_de_captura, categoria) values(?, ?, ?, ?, ?)";
+
         try(PreparedStatement ps = ConnectionFactory.getConnection().prepareStatement(sql))
         {
             ps.setString(1, pokemon.getNome());
             ps.setDouble(2, pokemon.getAltura());
             ps.setDouble(3, pokemon.getPeso());
+            // A data está no passado: "2024-10-27" funciona hoje (2025-10-27)
             ps.setDate(4, Date.valueOf(pokemon.getDataDeCaptura()));
             ps.setString(5, pokemon.getCategoria());
+
             if (ps.executeUpdate() > 0) {
+
+                // É essencial ler a chave gerada para que o driver funcione
+                ResultSet rs = ps.getGeneratedKeys();
+                if (rs.next()) {
+                    Long codigoGerado = rs.getLong(1);
+                    pokemon.setCodigo(codigoGerado);
+                }
+
                 return pokemon;
             } else {
                 return null;
             }
         } catch (SQLException e) {
             System.out.println("Erro ao salvar: " + e.getMessage());
+            return null;
         } finally {
             ConnectionFactory.closeConnection();
         }
-        return null;
     }
 
     public boolean delete(Long codigo) {
@@ -99,6 +125,11 @@ public class PokemonDAO {
     }
 
     public PokemonTO update(PokemonTO pokemon) {
+        Connection connection = ConnectionFactory.getConnection();
+        if (connection == null) {
+            System.out.println("Erro: Conexão nula em findByCodigo.");
+            return null;
+        }
         String sql = "update ddd_pokemon set nome=?, altura=?, peso=?, data_de_captura=?, categoria=? where codigo=?";
         try(PreparedStatement ps = ConnectionFactory.getConnection().prepareStatement(sql))
         {
