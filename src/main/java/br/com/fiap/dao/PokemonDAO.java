@@ -10,20 +10,21 @@ import java.util.ArrayList;
 
 public class PokemonDAO {
     public ArrayList<PokemonTO> findAll() {
-        ArrayList<PokemonTO> remedios = new ArrayList<PokemonTO>();
-        String sql = "select * from ddd_remedios order by codigo";
+        ArrayList<PokemonTO> pokemons = new ArrayList<PokemonTO>();
+        String sql = "select * from ddd_pokemon order by codigo";
         try(PreparedStatement ps = ConnectionFactory.getConnection().prepareStatement(sql))
         {
             ResultSet rs = ps.executeQuery();
             if (rs != null) {
                 while (rs.next()) {
-                    PokemonTO remedio = new PokemonTO();
-                    remedio.setCodigo(rs.getLong("codigo"));
-                    remedio.setNome(rs.getString("nome"));
-                    remedio.setPreco(rs.getDouble("preco"));
-                    remedio.setDataDeFabricacao(rs.getDate("data_de_fabricacao").toLocalDate());
-                    remedio.setDataDeValidade(rs.getDate("data_de_validade").toLocalDate());
-                    remedios.add(remedio);
+                    PokemonTO pokemon = new PokemonTO();
+                    pokemon.setCodigo(rs.getLong("codigo"));
+                    pokemon.setNome(rs.getString("nome"));
+                    pokemon.setAltura(rs.getDouble("altura"));
+                    pokemon.setPeso(rs.getDouble("peso"));
+                    pokemon.setDataDeCaptura(rs.getDate("data_de_captura").toLocalDate());
+                    pokemon.setCategoria(rs.getString("categoria"));
+                    pokemons.add(pokemon);
                 }
             } else {
                 return null;
@@ -33,22 +34,23 @@ public class PokemonDAO {
         } finally {
             ConnectionFactory.closeConnection();
         }
-        return remedios;
+        return pokemons;
     }
 
     public PokemonTO findByCodigo(Long codigo) {
-        PokemonTO remedio = new PokemonTO();
-        String sql = "select * from ddd_remedios where codigo = ?";
+        PokemonTO pokemon = new PokemonTO();
+        String sql = "select * from ddd_pokemon where codigo = ?";
         try(PreparedStatement ps = ConnectionFactory.getConnection().prepareStatement(sql))
         {
             ps.setLong(1, codigo);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                remedio.setCodigo(rs.getLong("codigo"));
-                remedio.setNome(rs.getString("nome"));
-                remedio.setPreco(rs.getDouble("preco"));
-                remedio.setDataDeFabricacao(rs.getDate("data_de_fabricacao").toLocalDate());
-                remedio.setDataDeValidade(rs.getDate("data_de_validade").toLocalDate());
+                pokemon.setCodigo(rs.getLong("codigo"));
+                pokemon.setNome(rs.getString("nome"));
+                pokemon.setAltura(rs.getDouble("altura"));
+                pokemon.setPeso(rs.getDouble("peso"));
+                pokemon.setDataDeCaptura(rs.getDate("data_de_captura").toLocalDate());
+                pokemon.setCategoria(rs.getString("categoria"));
             } else {
                 return null;
             }
@@ -57,19 +59,20 @@ public class PokemonDAO {
         } finally {
             ConnectionFactory.closeConnection();
         }
-        return remedio;
+        return pokemon;
     }
 
-    public PokemonTO save(PokemonTO remedio) {
-        String sql = "insert into ddd_remedios (nome, preco, data_de_fabricacao, data_de_validade) values(?, ?, ?, ?)";
+    public PokemonTO save(PokemonTO pokemon) {
+        String sql = "insert into ddd_pokemon (nome, altura, peso, data_de_captura, categoria) values(?, ?, ?, ?, ?)";
         try(PreparedStatement ps = ConnectionFactory.getConnection().prepareStatement(sql))
         {
-            ps.setString(1, remedio.getNome());
-            ps.setDouble(2, remedio.getPreco());
-            ps.setDate(3, Date.valueOf(remedio.getDataDeFabricacao()));
-            ps.setDate(4, Date.valueOf(remedio.getDataDeValidade()));
+            ps.setString(1, pokemon.getNome());
+            ps.setDouble(2, pokemon.getAltura());
+            ps.setDouble(3, pokemon.getPeso());
+            ps.setDate(4, Date.valueOf(pokemon.getDataDeCaptura()));
+            ps.setString(5, pokemon.getCategoria());
             if (ps.executeUpdate() > 0) {
-                return remedio;
+                return pokemon;
             } else {
                 return null;
             }
@@ -82,7 +85,7 @@ public class PokemonDAO {
     }
 
     public boolean delete(Long codigo) {
-        String sql = "delete from ddd_remedios where codigo = ?";
+        String sql = "delete from ddd_pokemon where codigo = ?";
         try(PreparedStatement ps = ConnectionFactory.getConnection().prepareStatement(sql))
         {
             ps.setLong(1, codigo);
@@ -95,17 +98,17 @@ public class PokemonDAO {
         return false;
     }
 
-    public PokemonTO update(PokemonTO remedio) {
-        String sql = "update ddd_remedios set nome=?, preco=?, data_de_fabricacao=?, data_de_validade=? where codigo=?";
+    public PokemonTO update(PokemonTO pokemon) {
+        String sql = "update ddd_pokemon set nome=?, altura=?, peso=?, data_de_captura=?, categoria=? where codigo=?";
         try(PreparedStatement ps = ConnectionFactory.getConnection().prepareStatement(sql))
         {
-            ps.setString(1, remedio.getNome());
-            ps.setDouble(2, remedio.getPreco());
-            ps.setDate(3, Date.valueOf(remedio.getDataDeFabricacao()));
-            ps.setDate(4, Date.valueOf(remedio.getDataDeValidade()));
-            ps.setLong(5, remedio.getCodigo());
+            ps.setString(1, pokemon.getNome());
+            ps.setDouble(2, pokemon.getAltura());
+            ps.setDouble(3, pokemon.getPeso());
+            ps.setDate(4, Date.valueOf(pokemon.getDataDeCaptura()));
+            ps.setString(5, pokemon.getCategoria());
             if (ps.executeUpdate() > 0) {
-                return remedio;
+                return pokemon;
             } else {
                 return null;
             }

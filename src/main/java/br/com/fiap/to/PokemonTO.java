@@ -11,20 +11,24 @@ public class PokemonTO {
     private String nome;
     @NotNull
     @PositiveOrZero
-    private Double preco;
+    private Double altura;
+    @NotNull
+    @PositiveOrZero
+    private Double peso;
+    @NotBlank
+    private String categoria;
     @PastOrPresent
-    private LocalDate dataDeFabricacao;
-    @FutureOrPresent
-    private LocalDate dataDeValidade;
+    private LocalDate dataDeCaptura;
     // construtores
     public PokemonTO() {
     }
-    public PokemonTO(Long codigo, String nome, Double preco, LocalDate dataDeFabricacao, LocalDate dataDeValidade) {
+    public PokemonTO(Long codigo, String nome, Double altura, Double peso, String categoria, LocalDate dataDeCaptura) {
         this.codigo = codigo;
         this.nome = nome;
-        this.preco = preco;
-        this.dataDeFabricacao = dataDeFabricacao;
-        this.dataDeValidade = dataDeValidade;
+        this.altura = altura;
+        this.peso = peso;
+        this.categoria = categoria;
+        this.dataDeCaptura = dataDeCaptura;
     }
     // métodos getters/setters
 
@@ -44,27 +48,35 @@ public class PokemonTO {
         this.nome = nome;
     }
 
-    public Double getPreco() {
-        return preco;
+    public Double getAltura() {
+        return altura;
     }
 
-    public void setPreco(Double preco) {
-        this.preco = preco;
+    public void setAltura(Double altura) {
+        this.altura = altura;
     }
 
-    public LocalDate getDataDeFabricacao() {
-        return dataDeFabricacao;
+    public Double getPeso() {
+        return peso;
     }
 
-    public void setDataDeFabricacao(LocalDate dataDeFabricacao) {
-        this.dataDeFabricacao = dataDeFabricacao;
+    public void setPeso(Double peso) {
+        this.peso = peso;
     }
 
-    public LocalDate getDataDeValidade() {
-        return dataDeValidade;
+    public String getCategoria() {
+        return categoria;
     }
 
-    public void setDataDeValidade(LocalDate dataDeValidade) {
-        this.dataDeValidade = dataDeValidade;
+    public void setCategoria(String categoria) {
+        this.categoria = categoria;
+    }
+
+    public LocalDate getDataDeCaptura() {
+        return dataDeCaptura;
+    }
+
+    public void setDataDeCaptura(LocalDate dataDeCaptura) {
+        this.dataDeCaptura = dataDeCaptura;
     }
 }

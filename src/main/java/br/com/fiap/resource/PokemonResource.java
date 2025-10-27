@@ -45,8 +45,8 @@ public class PokemonResource {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response save(@Valid PokemonTO remedio) {
-        PokemonTO resultado = pokemonBO.save(remedio);
+    public Response save(@Valid PokemonTO pokemon) {
+        PokemonTO resultado = pokemonBO.save(pokemon);
         Response.ResponseBuilder response = null;
         if (resultado != null){
             response = Response.created(null);  // 201 - CREATED
@@ -72,9 +72,9 @@ public class PokemonResource {
     @PUT
     @Path("/{codigo}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response update(@Valid PokemonTO remedio, @PathParam("codigo") Long codigo) {
-        remedio.setCodigo(codigo);
-        PokemonTO resultado = pokemonBO.update(remedio);
+    public Response update(@Valid PokemonTO pokemon, @PathParam("codigo") Long codigo) {
+        pokemon.setCodigo(codigo);
+        PokemonTO resultado = pokemonBO.update(pokemon);
         Response.ResponseBuilder response = null;
         if (resultado != null){
             response = Response.created(null);  // 201 - CREATED

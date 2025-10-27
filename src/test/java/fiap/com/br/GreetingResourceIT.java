@@ -1,4 +1,4 @@
-package org.acme;
+package fiap.com.br;
 
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 
