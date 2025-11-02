@@ -74,34 +74,28 @@ public class PokemonDAO {
     public PokemonTO save(PokemonTO pokemon) {
         Connection connection = ConnectionFactory.getConnection();
         if (connection == null) {
-            System.out.println("Erro: Conexão nula em save.");
+            System.out.println("Erro: Conexão nula em update.");
             return null;
         }
 
         String sql = "update ddd_pokemon set nome=?, altura=?, peso=?, categoria=?, data_de_captura=? where codigo=?";
 
-        try(PreparedStatement ps = ConnectionFactory.getConnection().prepareStatement(sql))
+        try(PreparedStatement ps = connection.prepareStatement(sql))
         {
-            ps.setLong(1, pokemon.getCodigo());
-            ps.setString(2, pokemon.getNome());
-            ps.setDouble(3, pokemon.getAltura());
-            ps.setDouble(4, pokemon.getPeso());
+            ps.setString(1, pokemon.getNome());
+            ps.setDouble(2, pokemon.getAltura());
+            ps.setDouble(3, pokemon.getPeso());
+            ps.setString(4, pokemon.getCategoria());
             ps.setDate(5, Date.valueOf(pokemon.getDataDeCaptura()));
-            ps.setString(6, pokemon.getCategoria());
+            ps.setLong(6, pokemon.getCodigo());
 
             if (ps.executeUpdate() > 0) {
-                ResultSet rs = ps.getGeneratedKeys();
-                if (rs.next()) {
-                    Long codigoGerado = rs.getLong(1);
-                    pokemon.setCodigo(codigoGerado);
-                }
-
                 return pokemon;
             } else {
                 return null;
             }
         } catch (SQLException e) {
-            System.out.println("Erro ao salvar: " + e.getMessage());
+            System.out.println("Erro ao atualizar: " + e.getMessage());
             return null;
         } finally {
             ConnectionFactory.closeConnection();
