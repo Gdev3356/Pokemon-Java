@@ -34,7 +34,7 @@ public class PokemonDAO {
                 pokemons.add(pokemon);
             }
         } catch (SQLException e) {
-            System.out.println("Erro na consulta SQL: " + e.getMessage());
+            System.out.println("Erro na busca do Banco de Dados: " + e.getMessage());
         } finally {
             ConnectionFactory.closeConnection();
         }
@@ -64,7 +64,7 @@ public class PokemonDAO {
                 return null;
             }
         } catch (SQLException e) {
-            System.out.println("Erro na consulta: " + e.getMessage());
+            System.out.println("Erro na busca: " + e.getMessage());
         } finally {
             ConnectionFactory.closeConnection();
         }
@@ -119,18 +119,19 @@ public class PokemonDAO {
     public PokemonTO update(PokemonTO pokemon) {
         Connection connection = ConnectionFactory.getConnection();
         if (connection == null) {
-            System.out.println("Erro: Conexão nula em findByCodigo.");
+            System.out.println("Erro: Conexão nula em update.");
             return null;
         }
         String sql = "update ddd_pokemon set nome=?, altura=?, peso=?, data_de_captura=?, categoria=? where codigo=?";
-        try(PreparedStatement ps = ConnectionFactory.getConnection().prepareStatement(sql))
+        try(PreparedStatement ps = connection.prepareStatement(sql))
         {
-            ps.setLong(1, pokemon.getCodigo());
-            ps.setString(2, pokemon.getNome());
-            ps.setDouble(3, pokemon.getAltura());
-            ps.setDouble(4, pokemon.getPeso());
-            ps.setDate(5, Date.valueOf(pokemon.getDataDeCaptura()));
-            ps.setString(6, pokemon.getCategoria());
+            ps.setString(1, pokemon.getNome());           // nome
+            ps.setDouble(2, pokemon.getAltura());         // altura
+            ps.setDouble(3, pokemon.getPeso());           // peso
+            ps.setDate(4, Date.valueOf(pokemon.getDataDeCaptura())); // data_de_captura
+            ps.setString(5, pokemon.getCategoria());      // categoria
+            ps.setLong(6, pokemon.getCodigo());           // codigo (WHERE)
+
             if (ps.executeUpdate() > 0) {
                 return pokemon;
             } else {
