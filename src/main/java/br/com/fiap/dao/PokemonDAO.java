@@ -49,8 +49,7 @@ public class PokemonDAO {
             return null;
         }
         String sql = "select * from ddd_pokemon where codigo = ?";
-        try(PreparedStatement ps = ConnectionFactory.getConnection().prepareStatement(sql))
-        {
+        try (PreparedStatement ps = ConnectionFactory.getConnection().prepareStatement(sql)) {
             ps.setLong(1, codigo);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -78,36 +77,24 @@ public class PokemonDAO {
             return null;
         }
 
-        String sql = "insert into ddd_pokemon (nome, altura, peso, data_de_captura, categoria) values(?, ?, ?, ?, ?)";
+        String sql = "update ddd_pokemon set nome=?, altura=?, peso=?, categoria=?, data_de_captura=? where codigo=?";
 
-        try(PreparedStatement ps = ConnectionFactory.getConnection().prepareStatement(sql))
-        {
+        try (PreparedStatement ps = ConnectionFactory.getConnection().prepareStatement(sql)) {
             ps.setString(1, pokemon.getNome());
             ps.setDouble(2, pokemon.getAltura());
             ps.setDouble(3, pokemon.getPeso());
-            // A data está no passado: "2024-10-27" funciona hoje (2025-10-27)
             ps.setDate(4, Date.valueOf(pokemon.getDataDeCaptura()));
             ps.setString(5, pokemon.getCategoria());
 
             if (ps.executeUpdate() > 0) {
-
-                // É essencial ler a chave gerada para que o driver funcione
-                ResultSet rs = ps.getGeneratedKeys();
-                if (rs.next()) {
-                    Long codigoGerado = rs.getLong(1);
-                    pokemon.setCodigo(codigoGerado);
-                }
-
                 return pokemon;
-            } else {
-                return null;
             }
         } catch (SQLException e) {
             System.out.println("Erro ao salvar: " + e.getMessage());
-            return null;
         } finally {
             ConnectionFactory.closeConnection();
         }
+        return null;
     }
 
     public boolean delete(Long codigo) {
