@@ -133,11 +133,12 @@ public class PokemonDAO {
         String sql = "update ddd_pokemon set nome=?, altura=?, peso=?, data_de_captura=?, categoria=? where codigo=?";
         try(PreparedStatement ps = ConnectionFactory.getConnection().prepareStatement(sql))
         {
-            ps.setString(1, pokemon.getNome());
-            ps.setDouble(2, pokemon.getAltura());
-            ps.setDouble(3, pokemon.getPeso());
-            ps.setDate(4, Date.valueOf(pokemon.getDataDeCaptura()));
-            ps.setString(5, pokemon.getCategoria());
+            ps.setLong(1, pokemon.getCodigo());
+            ps.setString(2, pokemon.getNome());
+            ps.setDouble(3, pokemon.getAltura());
+            ps.setDouble(4, pokemon.getPeso());
+            ps.setDate(5, Date.valueOf(pokemon.getDataDeCaptura()));
+            ps.setString(6, pokemon.getCategoria());
             if (ps.executeUpdate() > 0) {
                 return pokemon;
             } else {
