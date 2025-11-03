@@ -74,28 +74,36 @@ public class PokemonDAO {
     public PokemonTO save(PokemonTO pokemon) {
         Connection connection = ConnectionFactory.getConnection();
         if (connection == null) {
-            System.out.println("Erro: Conexão nula em update.");
+            System.out.println("Erro: Conexão nula em save.");
             return null;
         }
 
-        String sql = "update ddd_pokemon set nome=?, altura=?, peso=?, categoria=?, data_de_captura=? where codigo=?";
+        String sql = "INSERT INTO ddd_pokemon (nome, altura, peso, categoria, data_de_captura) VALUES (?, ?, ?, ?, ?)";
 
-        try(PreparedStatement ps = connection.prepareStatement(sql))
+        // Tenta obter as chaves geradas
+        try(PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
         {
             ps.setString(1, pokemon.getNome());
             ps.setDouble(2, pokemon.getAltura());
             ps.setDouble(3, pokemon.getPeso());
             ps.setString(4, pokemon.getCategoria());
             ps.setDate(5, Date.valueOf(pokemon.getDataDeCaptura()));
-            ps.setLong(6, pokemon.getCodigo());
 
-            if (ps.executeUpdate() > 0) {
+            int rowsAffected = ps.executeUpdate();
+
+            if (rowsAffected > 0) {
+                try (ResultSet rs = ps.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        long novoCodigo = rs.getLong(1);
+                        pokemon.setCodigo(novoCodigo);
+                    }
+                }
                 return pokemon;
             } else {
                 return null;
             }
         } catch (SQLException e) {
-            System.out.println("Erro ao atualizar: " + e.getMessage());
+            System.out.println("Erro ao inserir: " + e.getMessage());
             return null;
         } finally {
             ConnectionFactory.closeConnection();
@@ -125,12 +133,12 @@ public class PokemonDAO {
         String sql = "update ddd_pokemon set nome=?, altura=?, peso=?, data_de_captura=?, categoria=? where codigo=?";
         try(PreparedStatement ps = connection.prepareStatement(sql))
         {
-            ps.setString(1, pokemon.getNome());           // nome
-            ps.setDouble(2, pokemon.getAltura());         // altura
-            ps.setDouble(3, pokemon.getPeso());           // peso
-            ps.setDate(4, Date.valueOf(pokemon.getDataDeCaptura())); // data_de_captura
-            ps.setString(5, pokemon.getCategoria());      // categoria
-            ps.setLong(6, pokemon.getCodigo());           // codigo (WHERE)
+            ps.setString(1, pokemon.getNome());
+            ps.setDouble(2, pokemon.getAltura());
+            ps.setDouble(3, pokemon.getPeso());
+            ps.setDate(4, Date.valueOf(pokemon.getDataDeCaptura()));
+            ps.setString(5, pokemon.getCategoria());
+            ps.setLong(6, pokemon.getCodigo());
 
             if (ps.executeUpdate() > 0) {
                 return pokemon;
