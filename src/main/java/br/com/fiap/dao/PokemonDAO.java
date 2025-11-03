@@ -80,14 +80,14 @@ public class PokemonDAO {
 
         String sql = "INSERT INTO ddd_pokemon (nome, altura, peso, categoria, data_de_captura) VALUES (?, ?, ?, ?, ?)";
 
-        // Tenta obter as chaves geradas
         try(PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
         {
             ps.setString(1, pokemon.getNome());
             ps.setDouble(2, pokemon.getAltura());
             ps.setDouble(3, pokemon.getPeso());
             ps.setString(4, pokemon.getCategoria());
-            ps.setDate(5, Date.valueOf(pokemon.getDataDeCaptura()));
+            java.sql.Timestamp ts = java.sql.Timestamp.valueOf(pokemon.getDataDeCaptura().atStartOfDay());
+            ps.setTimestamp(5, ts);
 
             int rowsAffected = ps.executeUpdate();
 
